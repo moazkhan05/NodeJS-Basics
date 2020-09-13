@@ -48,6 +48,9 @@ app.use(session({
   resave: false,
   store: new FileStore()
 }));
+//
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
 
 //working on basic auth
 function auth(req,res,next){
@@ -58,35 +61,16 @@ function auth(req,res,next){
       if(!authHeader){
         var err = new Error ('You are not authenticated');
 
-        res.setHeader('www-Authenticate','Basic');
-        err.status=401;
-        return next(err);
-      }
-
-      var auth = new Buffer(authHeader.split(' ')[1],'base64').toString().split(':');
-      var username=auth[0];
-      var password= auth[1];
-
-      if(username==='admin' && password==='password'){
-        req.session.user='admin';
-        next();
-      }
-      else{
-        var err = new Error ('You are not authenticated');
-
-        res.setHeader('www-Authenticate','Basic');
         err.status=401;
         return next(err);
       }
   }else{
-    if(req.session.user==='admin'){
+    if(req.session.user==='authenticated'){
       next();
     }else{
       var err = new Error ('You are not authenticated');
-
-        //res.setHeader('www-Authenticate','Basic');
-        err.status=401;
-        return next(err);
+      err.status=401;
+      return next(err);
     }
   }
 
@@ -98,8 +82,7 @@ app.use(auth);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+
 app.use('/dishes',dishRouter);
 app.use('/promotions',promoRouter);
 app.use('/leaders',leaderRouter);
