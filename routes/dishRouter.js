@@ -16,7 +16,7 @@ dishRouter.use(bodyParser.json());
 dishRouter.route('/')
 .options(cors.corsWithOptions,(req,res)=>{res.sendStatus(200);})
 .get(cors.cors,(req,res,next) => {
-    Dishes.find({})
+    Dishes.find(req.query)
     .populate('comments.author')
     .then((dishes) => {
         res.statusCode = 200;
@@ -271,3 +271,32 @@ dishRouter.route('/:dishId/comments/:commentId')
 
 
 module.exports = dishRouter;
+
+// Favorites.findById(req.body._id)
+//             .then((favorite) => {
+//                 if (favorite == null) {
+//                     let newFavorite = {};
+//                     newFavorite.user = req.user._id;
+//                     Favorites.create(newFavorite)
+//                         .then((favorite) => {
+//                             console.log('Favorite Created ', newFavorite);
+//                             favorite.dishes.push(req.params.dishId)
+//                             favorite.save()
+//                                 .then((favorite) => {
+//                                         newFavorite.dishes.findById(req.dishId)
+//                                         .then((favorite) => {
+//                                             res.statusCode = 200;
+//                                             res.setHeader('Content-Type', 'application/json');
+//                                             res.json(favorite);
+//                                         })
+//                                 }, (err) => next(err));
+//                         }, (err) => next(err))
+//                         .catch((err) => next(err));
+//                 } else {
+//                     err = new Error('Dish ' + req.params.dishId + ' already exist');
+//                     err.status = 404;
+//                     return next(err);
+//                 }
+//             } , (err) => next(err))
+//             .catch((err) => next(err));
+//     })
